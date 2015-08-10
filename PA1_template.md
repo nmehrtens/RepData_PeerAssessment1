@@ -1,9 +1,4 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
+# Reproducible Research: Peer Assessment 1
 
 ## Loading and preprocessing the data
 
@@ -15,7 +10,8 @@ Show any code that is needed to
 2. Process/transform the data (if necessary) into a format suitable for your analysis
 
 
-```{r}
+
+```r
 # load the data
 unzip("activity.zip")
 data <- read.csv("activity.csv")
@@ -28,27 +24,31 @@ For this part of the assignment, you can ignore the missing values in the datase
 
 1. Calculate the total number of steps taken per day
 
-```{r}
+
+```r
 # splitting my data frame by date
 datesplit <-split(data, data$date)
 
 #calculating the sum of steps for each data frame split by date
 # and summarizing the result into an array
 daily_steps <- sapply(datesplit, function(x) sum(x$steps))
-
 ```
 
 2. If you do not understand the difference between a histogram and a barplot, research the difference between them. Make a histogram of the total number of steps taken each day.
 
-```{r histplot, fig.height=4, fig.path='figures/'}
+
+```r
 hist(daily_steps, breaks=10, col="steelblue", xlab="Number of steps", 
      main="Histogram of total number of steps taken per day")
 ```
 
+![](figures/histplot-1.png) 
+
 
 3. Calculate and report the mean and median of the total number of steps taken per day.
 
-```{r}
+
+```r
 # Mean
 mean_steps <- mean(daily_steps, na.rm=TRUE)
 # Median
@@ -56,9 +56,13 @@ median_steps <- median(daily_steps, na.rm=TRUE)
 median_steps
 ```
 
-The mean number of steps per day is: `r round(mean_steps,0)`.
+```
+## [1] 10765
+```
 
-The median number of steps per day is:  `r median_steps`.
+The mean number of steps per day is: 1.0766\times 10^{4}.
+
+The median number of steps per day is:  10765.
 
 
 
@@ -67,7 +71,8 @@ The median number of steps per day is:  `r median_steps`.
 
 1. Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
 
-```{r timeseries_plot, fig.height=4, fig.path='figures/'}
+
+```r
 # Splitting my data frame by interval and calculating the mean for each
 # data frame, removing the NA values, and summarizing into an array. 
 
@@ -82,16 +87,19 @@ plot(unique_intervals,avgsteps_interval, type='l',
      )
 ```
 
+![](figures/timeseries_plot-1.png) 
+
 2. Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
 
-```{r}
+
+```r
 max_index <- match(max(avgsteps_interval),avgsteps_interval)
 
 maxSteps_inInterval <- max(avgsteps_interval)
 maxInterval <- unique_intervals[max_index]
 ```
 
-The 5-minute interval `r maxInterval` contains the maximum number of steps (at `r maxSteps_inInterval` steps).
+The 5-minute interval 835 contains the maximum number of steps (at 206.1698113 steps).
 
 
 
@@ -102,13 +110,18 @@ Note that there are a number of days/intervals where there are missing values (c
 
 1. Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs)
 
-```{r}
+
+```r
 empty <- is.na(data)
 missingValues <- length(data[empty])
 missingValues
 ```
 
-The total number of rows with missing values is: `r missingValues`
+```
+## [1] 2304
+```
+
+The total number of rows with missing values is: 2304
 
 
 2. Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc.
@@ -117,7 +130,8 @@ My plan is to replace NAs values in the "Steps" column with the mean for that 5-
 
 3. Create a new dataset that is equal to the original dataset but with the missing data filled in.
 
-```{r}
+
+```r
 # My dataframe split by date is called datesplit
 # My vector of mean steps in 5min intervals is called avgsteps_interval
 # replace NA values for steps in datesplit with average interval value from avgsteps_interval. 
@@ -139,25 +153,40 @@ data_complete <- do.call("rbind", datesplit_c)
 
 4. a) Make a histogram of the total number of steps taken each day and 
 
-```{r histplot2, fig.height=4, fig.path='figures/'}
+
+```r
 daily_steps_c <- sapply(datesplit_c, function(x) sum(x$steps))
 
 hist(daily_steps_c, breaks=10, col="salmon", xlab="Number of steps",
      main="Histogram of total number of steps taken per day")
 ```
 
+![](figures/histplot2-1.png) 
+
 b) Calculate and report the mean and median total number of steps taken per day. 
 
-```{r}
+
+```r
 mean_complete <- mean(daily_steps_c)
 mean_complete
+```
+
+```
+## [1] 10766.19
+```
+
+```r
 median_complete <- median(daily_steps_c)
 median_complete
 ```
 
-The mean number of steps per day is: `r mean_steps`.
+```
+## [1] 10766.19
+```
 
-The median number of steps per day is:  `r median_steps`.
+The mean number of steps per day is: 1.0766189\times 10^{4}.
+
+The median number of steps per day is:  10765.
 
 c) Do these values differ from the estimates from the first part of the assignment? 
 
@@ -176,7 +205,8 @@ For this part the weekdays() function may be of some help here. Use the dataset 
 
 1. Create a new factor variable in the dataset with two levels – “weekday” and “weekend” indicating whether a given date is a weekday or weekend day.
 
-```{r}
+
+```r
 dayofweek <- weekdays(as.Date(data_complete$date))
 daytype <- ifelse(dayofweek %in% c("Saturday","Sunday"), "weekend", "weekday")
 data_complete$daytype <- as.factor(daytype)
@@ -184,7 +214,8 @@ data_complete$daytype <- as.factor(daytype)
 
 2. Make a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis). See the README file in the GitHub repository to see an example of what this plot should look like using simulated data.
 
-```{r panelplot, fig.path='figures/'}
+
+```r
 # using aggregate to split on both day type (weekend/weekday) and interval
 # and output mean number of steps.
 daytypesplit  <- aggregate(data_complete$steps, by = list(data_complete$daytype, data_complete$interval), FUN = mean ,na.rm=TRUE)
@@ -197,4 +228,6 @@ names(daytypesplit) <- c("daytype","interval","avesteps")
 library(lattice)
 xyplot(avesteps ~ interval | daytype, data= daytypesplit, layout= c(1,2), type="l", ylab="Average number of steps", xlab="5-minute interval")
 ```
+
+![](figures/panelplot-1.png) 
 
